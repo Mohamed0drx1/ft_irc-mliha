@@ -1,4 +1,4 @@
-#include "Server.hpp"
+#include "../includes/Server.hpp"
 #include <stdexcept>
 #include <iostream>
 #include <cstdlib>
@@ -177,3 +177,68 @@ void Server::run() {
 }
 
 void Server::stop() { _running = false; }
+
+
+/// server hellper for channels
+
+Client* Server::getClient(int fd)
+{
+    std::map<int, Client>::iterator it = _clients.find(fd);
+
+    if (it == _clients.end())
+        return NULL;
+
+    return &it->second;
+}
+
+Client* Server::findClientByNickname(const std::string& nickname)
+{
+    for (std::map<int, Client>::iterator it = _clients.begin();
+         it != _clients.end(); ++it)
+    {
+        if (it->second.getNickname() == nickname)
+            return &it->second;
+    }
+
+    return NULL;
+}
+
+bool Server::nicknameExists(const std::string& nickname) const
+{
+    for (std::map<int, Client>::const_iterator it = _clients.begin();
+         it != _clients.end(); ++it)
+    {
+        if (it->second.getNickname() == nickname)
+            return true;
+    }
+
+    return false;
+}
+
+Channel* Server::getChannel(const std::string& name)
+{
+    std::map<std::string, Channel>::iterator it = _channels.find(name);
+
+    if (it == _channels.end())
+        return NULL;
+
+    return &it->second;
+}
+
+Channel* Server::createChannel(const std::string& name)
+{
+    if (_channels.find(name) != _channels.end())
+        return NULL;
+
+    _channels.insert(std::make_pair(name, Channel(name)));
+
+    return &_channels.find(name)->second;
+}
+
+void Server::removeChannel(const std::string& name)
+{
+    std::map<std::string, Channel>::iterator it = _channels.find(name);
+
+    if (it != _channels.end())
+        _channels.erase(it);
+}
