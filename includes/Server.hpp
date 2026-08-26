@@ -48,6 +48,10 @@ public:
     Channel* getChannel(const std::string& name);
     Channel* createChannel(const std::string& name);
     void removeChannel(const std::string& name);
+    //cpmmands
+    int PASS_command(Client &c, std::string &param, int fd);
+	int NICK_command(Client &c, std::string &param, int fd);
+	int PING_command(Client &c, std::string &param, int fd);
 };
 
 #endif
